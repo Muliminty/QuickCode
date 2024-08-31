@@ -1,0 +1,21 @@
+{
+  "name": "quickcode",
+  "version": "1.0.0",
+  "description": "小工具脚本库，提升效率，解决问题！",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "system:cpu-temp": "node ./scripts/systeminformation.js"
+  },
+  "keywords": [
+    "utilities",
+    "scripts",
+    "tools",
+    "automation"
+  ],
+  "author": "Muliminty",
+  "license": "ISC",
+  "dependencies": {
+    "systeminformation": "^5.23.5"
+  }
+}
