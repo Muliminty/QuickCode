@@ -1,7 +1,3 @@
-以下是补充了 `markdown-image-localizer` 相关内容的 **QuickCode** 文档：
-
----
-
 # QuickCode
 
 **QuickCode** 是一个小工具脚本库，旨在提升效率并解决常见问题。
