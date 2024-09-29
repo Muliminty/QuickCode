@@ -1,15 +1,16 @@
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
-const config = require('../config.js')
+const { v4: uuidv4 } = require('uuid'); // 引入UUID库
+const config = require('../config.js');
 
-const MD_config = config['markdown-image-localizer']
+const MD_config = config['markdown-image-localizer'];
 
 // 定义要扫描的Markdown文件夹和图片存储目录
 const MD_PATH = MD_config['MD_PATH'];
+const IMG_DIR_NAME = MD_config['imageSaveDir'];
 const markdownDir = path.resolve(MD_PATH);
-const imageSaveDir = path.resolve(MD_PATH, MD_config['imageSaveDir']);
-
+const imageSaveDir = path.resolve(MD_PATH, IMG_DIR_NAME);
 
 // 确保图片保存文件夹存在
 if (!fs.existsSync(imageSaveDir)) {
@@ -19,8 +20,8 @@ if (!fs.existsSync(imageSaveDir)) {
 // 正则表达式匹配Markdown中的图片链接 ![alt](url)
 const imageRegex = /!\[.*?\]\((https?:\/\/[^\s)]+)\)/g;
 
-// 下载图片并返回新的本地路径
-const downloadImage = async (url, index) => {
+// 下载图片并返回新的本地路径，生成唯一文件名
+const downloadImage = async (url) => {
   try {
     const response = await axios({
       url,
@@ -36,8 +37,10 @@ const downloadImage = async (url, index) => {
     else if (contentType.includes('image/gif')) imageExt = '.gif';
     else if (contentType.includes('image/webp')) imageExt = '.webp';
 
-    const imageName = `image_${index}${imageExt}`; // 使用索引创建唯一文件名
-    const imagePath = path.join(imageSaveDir, imageName);
+    // 使用时间戳和UUID生成唯一文件名
+    const timestamp = Date.now();
+    const uniqueName = `${uuidv4()}_${timestamp}${imageExt}`;
+    const imagePath = path.join(imageSaveDir, uniqueName);
 
     const writer = fs.createWriteStream(imagePath);
     response.data.pipe(writer);
@@ -60,11 +63,11 @@ const processMarkdownFile = async (filePath) => {
     const [imageMarkdown, imageUrl] = images[i];
 
     console.log(`发现图片: ${imageUrl}`);
-    const localImagePath = await downloadImage(imageUrl, i);
+    const localImagePath = await downloadImage(imageUrl);
 
     if (localImagePath) {
       // 替换Markdown中的远程链接为本地链接
-      const relativePath = `./images/${path.basename(localImagePath)}`;
+      const relativePath = `./${IMG_DIR_NAME}/${path.basename(localImagePath)}`;
       content = content.replace(imageUrl, relativePath);
     }
   }
@@ -89,3 +92,4 @@ const processMarkdownFiles = async () => {
 processMarkdownFiles()
   .then(() => console.log('所有文件处理完成'))
   .catch((err) => console.error('处理过程中发生错误:', err));
+
