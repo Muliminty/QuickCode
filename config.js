@@ -1,20 +1,37 @@
+const path = require('path');
+
 module.exports = {
     "markdown-image-localizer": {
         MD_PATH: "E:\\NOTE_STORAGE\\Muliminty-Note\\小技巧\\RustDesk",
         imageSaveDir: "附件"
     },
     "gitpull": {
-        "directories": [
-            "E:\NOTE_STORAGE\stackedit-app-data"
+        // 多个仓库的配置
+        repos: [
+            // {
+            //     repoPath: 'E:/NOTE_STORAGE/stackedit-app-data',
+            //     branch: 'master',
+            // },
+            {
+                repoPath: 'E:/NOTE_STORAGE/repository-obsidian',
+                branch: 'main',
+            },
+            // 你可以继续添加更多仓库
         ],
-        "interval": 120,                  // 间隔时间（单位：秒）
-        "branch": "master",                 // 指定分支，留空为当前分支
-        "logPath": "./gitpull.log",       // 日志文件路径，留空则不记录日志
-        "executeOnStart": true,           // 是否启动时立即执行
-        "commands": [                     // 要执行的命令
-            "git fetch",
-            "git checkout main",
-            "git pull origin main"
-        ]
+
+        // 日志文件路径
+        logFilePath: path.join(__dirname, 'log', 'git_operations.log'),
+
+        // 定时执行 Git 操作的间隔（单位：毫秒）
+        interval: 1000 * 3, // 20 秒
+
+        // Git 操作日志前缀
+        logPrefix: '[Git 操作日志]',
+
+        // Git 操作失败的日志前缀
+        errorPrefix: '[Git 操作错误]',
+
+        // 如果仓库有更新才执行 pull 操作
+        shouldCheckStatus: true,
     }
 };
